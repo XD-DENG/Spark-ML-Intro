@@ -49,7 +49,24 @@ print(model.toDebugString())
 #### LIBSVM data format
 When I looked into LIBSVM data file for the first time, I got a little bit confused. But then I found its design is a brilliant idea.
 
-TO-DO
+LIBSVM data files look like below:
+```
+-1 1:-766 2:128 3:0.140625 4:0.304688 5:0.234375 6:0.140625 7:0.304688 8:0.234375
+-1 1:-726 2:131 3:0.129771 4:0.328244 5:0.229008 6:0.129771 7:0.328244 8:0.229008
+-1 1:-648 2:123 3:0.146341 4:0.333333 5:0.211382 6:0.146341 7:0.333333 8:0.211382
+-1 1:-764 2:124 3:0.137097 4:0.322581 5:0.233871 6:0.137097 7:0.322581 8:0.233871
+-1 1:-584 2:130 3:0.153846 4:0.392308 5:0.184615 6:0.153846 7:0.392308 8:0.184615
+......
+```
+The first element of each row is the label, or we can say it's the response value. The labels can be either discrete or continuous. Following the labels are the feature indices and the feature values (Please note that the index starts from `1` instead of `0` in LIBSVM data files).
+
+Sometimes we may find 'weird' LIBSVM data like below
+```
+-1 3:1 11:1 14:1 19:1 39:1 42:1 55:1 64:1 67:1 73:1 75:1 76:1 80:1 83:1 
+-1 3:1 6:1 17:1 27:1 35:1 40:1 57:1 63:1 69:1 73:1 74:1 76:1 81:1 103:1 
+-1 1:1 7:1 16:1 22:1 36:1 42:1 56:1 62:1 67:1 73:1 74:1 76:1 79:1 83:1 
+```
+The indices in it are not continuous. What's wrong? Actually the missing features are all 0. For example, in the first row, feature 1, 2, 4-10, 12-13, ... are all zero-values. This design is for the sake of memory usage. It would help improve the efficiency of the program if the data are sparse (containing quite many zero-values).
 
 #### How many trees we should have (`numTrees`)
 
