@@ -1,18 +1,20 @@
 # Spark Machine Learning Practice
 
-In this repo, I would try to introduce some basic usages of PySpark in machine learning. The contents I'm going to cover would be quite simple. I guess it would be helpful for some people since I would cover some questions I encountered myself from the perspective of a person who's used to the machine learning in R or more "normal" ML settings.
+In this repo, I try to introduce some basic machine learning usages of *PySpark*. The contents I'm going to cover would be quite simple. But I guess it would be helpful for some people since I would cover some questions I encountered myself from the perspective of a person who's used to more "normal" ML settings (like R language).
 
-Some of the examples are from the official examples given by Spark. But more options will be explored and some comments will be given to make it clearer. Just like I mentioned, even if with some experience of machine learning, there are still some points we may need additional information.
+Some of the examples are from the official examples given by Spark. But I will give more details.
 
 ## Random Forest
 
-As a fan of greedy algorithm, I would like to start with random forest algorithm.
+As a fan of greedy algorithm, I would like to start with *random forest* algorithm.
 
 What is the idea of *Random Forest*? 
 
-To put it simpel, averaging a set of observations reduces variance (given a set of `n` independent observations Z1,...,Zn, each with variance `sigma^2`, the variance of the mean of the observations is given by `sigma^2`/n). Hence a natural way to reduce the variance and hence increase the prediction accuracy of a machine learning model is to take many training sets from the population, build a separate prediction model using each training set, and average the resulting predictions [1]. 
+To put it simpel, averaging a set of observations reduces variance. Hence a natural way to reduce the variance and hence increase the prediction accuracy of a machine learning model is to take many training sets from the population, build a separate prediction model using each training set, and average the resulting predictions [1]. This is the idea of **bagging**, a special case of random forest. 
 
-Then we may need to subset the predictors. That is, in each training procedure, we don't use all the features we have. This seems like a 'waste' of resources we have. But let's suppose that there is a very strong predictor in the data, then in the models we produced, most of them will use that strong predictor in the top split and all of these trees will look similar, i.e., they're highly correlated. This may effect the reduction in variance and worsen the result. [1]
+Then we may need to subset the predictors. That is, in each training procedure, we don't use all the features we have. You may ask WHY since this seems like a 'waste' of resources we have. But let's suppose that there is a very strong predictor in the data, then in the models we produced, most of them will use that strong predictor in the top split and all of these decision trees will look similar, i.e., they're highly correlated. This may effect the reduction in variance and worsen the result. [1] This is why we only use randomly selected features in each tree model. 
+
+This is just the idea of random forest. Simple, straitforward, and elegant at the same time.
 
 Now let's have a look at the example code given by Spark. I commented the points where we may need to note (and details will be given later)
 
@@ -20,18 +22,16 @@ Now let's have a look at the example code given by Spark. I commented the points
 from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.mllib.util import MLUtils
 
-# ---!!!!!!---
+# --- Point 1 ---
 # Load and parse the data file into an RDD of LabeledPoint.
 data = MLUtils.loadLibSVMFile(sc, 'data/mllib/sample_libsvm_data.txt')
 # Split the data into training and test sets (30% held out for testing)
 (trainingData, testData) = data.randomSplit([0.7, 0.3])
 
 
-# ---!!!!!!---
+# --- Point 2, 3, 4 ---
 # Train a RandomForest model.
 #  Empty categoricalFeaturesInfo indicates all features are continuous.
-#  Note: Use larger numTrees in practice.
-#  Setting featureSubsetStrategy="auto" lets the algorithm choose.
 model = RandomForest.trainClassifier(trainingData, numClasses=2, categoricalFeaturesInfo={},
                                      numTrees=3, featureSubsetStrategy="auto",
                                      impurity='gini', maxDepth=4, maxBins=32)
@@ -46,19 +46,16 @@ print(model.toDebugString())
 
 ```
 
-#### LIBSVM data format
+##### Point 1: LIBSVM data format
 When I looked into LIBSVM data file for the first time, I got a little bit confused. But then I found its design is a brilliant idea.
 
 LIBSVM data files look like below:
 ```
 -1 1:-766 2:128 3:0.140625 4:0.304688 5:0.234375 6:0.140625 7:0.304688 8:0.234375
 -1 1:-726 2:131 3:0.129771 4:0.328244 5:0.229008 6:0.129771 7:0.328244 8:0.229008
--1 1:-648 2:123 3:0.146341 4:0.333333 5:0.211382 6:0.146341 7:0.333333 8:0.211382
--1 1:-764 2:124 3:0.137097 4:0.322581 5:0.233871 6:0.137097 7:0.322581 8:0.233871
--1 1:-584 2:130 3:0.153846 4:0.392308 5:0.184615 6:0.153846 7:0.392308 8:0.184615
 ......
 ```
-The first element of each row is the label, or we can say it's the response value. The labels can be either discrete or continuous. Following the labels are the feature indices and the feature values (Please note that the index starts from `1` instead of `0` in LIBSVM data files).
+The first element of each row is the *label*, or we can say it's the *response value*. The labels can be either discrete or continuous. Normally, the labels will be discrete if we're working on classification, and continuous if we're trying to do regression. Following the labels are the *feature indices* and the *feature values* in format `index:value` (Please note that the index starts from `1` instead of `0` in LIBSVM data files).
 
 Sometimes we may find 'weird' LIBSVM data like below
 ```
@@ -66,23 +63,31 @@ Sometimes we may find 'weird' LIBSVM data like below
 -1 3:1 6:1 17:1 27:1 35:1 40:1 57:1 63:1 69:1 73:1 74:1 76:1 81:1 103:1 
 -1 1:1 7:1 16:1 22:1 36:1 42:1 56:1 62:1 67:1 73:1 74:1 76:1 79:1 83:1 
 ```
-The indices in it are not continuous. What's wrong? Actually the missing features are all 0. For example, in the first row, feature 1, 2, 4-10, 12-13, ... are all zero-values. This design is for the sake of memory usage. It would help improve the efficiency of the program if the data are sparse (containing quite many zero-values).
+The indices in it are not continuous. What's wrong? Actually the missing features are all 0. For example, in the first row, feature 1, 2, 4-10, 12-13, ... are all zero-values. This design is partially for the sake of memory usage. It would help improve the efficiency of the our programs if the data are sparse (containing quite many zero-values).
 
-#### How many trees we should have (`numTrees`)
+
+##### Point 2: How many trees we should have (`numTrees`)
 
 This argument determines how many trees we build in a random forest. Increasing the number of trees will decrease the variance in predictions, and improve the model’s test accuracy. At the same time, training time will increaseroughly linearly in the number of trees.
 
-Personally, I would say 400-500 is a 'safe' choice.
+Personally, I would recommend 400-500 as a 'safe' choice.
 
-#### How many features to use (`featureSubsetStrategy`)
 
-As we mentioned above, the very unique charactristic of *random forest* is that in each tree we use a subset of all features (predictors). Then how many features should we use in each tree model? we can set `featureSubsetStrategy="auto"` of course, but we may want to tune it in some situations. Decreasing this number will speed up training, but can sometimes impact performance if too low [2].
+##### Point 3: How many features to use (`featureSubsetStrategy`)
+
+As we mentioned above, the very unique charactristic of *random forest* is that in each tree we use a subset of features (predictors) instead of using all of them. Then, how many features should we use in each tree model? we can set `featureSubsetStrategy="auto"` of course so that the function we called will help us configure automatically, but we may want to tune it in some situations. Decreasing this number will speed up training, but can sometimes impact performance if too low [2].
+
+For the function `RandomForest.trainClassifier` in PySaprk , argument `featureSubsetStrategy` supports“auto” (default), “all”, “sqrt”, “log2”, “onethird”. If “auto” is set, this parameter is set based on numTrees: if numTrees == 1, set to “all”; if numTrees > 1 (forest) set to “sqrt” [3].
 
 Usually, given the number of features is `p`, we use `p/3` features in each model when building a random forest for regression, and use `sqrt(p)` features in each model if a random forest is built for classification [1].
 
 
-#### What is 'gini' --- the measures used to grow the trees
-TO-DO
+
+##### Point 4: What is 'gini' --- the measures used to grow the trees (`impurity`)
+
+`impurity` argument helps determine the criterion used for information gain calculation, and in PySpark the supported values are “gini” (recommended) or “entropy” [3]. Since random forest is some kind of *greedy algorithm*, we can say that `impurity` helps determine what is the objective function when the algorithm makes each decisions.
+
+The most commonly used measures for this are just **Gini Index** and *Cross-entropy*, corresponding to the two supported values for `impurity` argument.
 
 
 
@@ -90,3 +95,5 @@ TO-DO
 [1] An Introduction to Statistical Learning with Applications in R
 
 [2] MLlib - Ensembles, http://spark.apache.org/docs/latest/mllib-ensembles.html
+
+[3] pyspark.mllib package, http://spark.apache.org/docs/latest/api/python/pyspark.mllib.html
