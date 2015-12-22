@@ -5,7 +5,7 @@ In this repo, I try to introduce some basic machine learning usages of *PySpark*
 Some of the examples are from the official examples given by Spark. But I will give more details.
 
 - [Random Forest](#random-forest)
-- [Regression](#2-sample-data)
+- [Regression](#regression)
 - [References](#references)
 - [License](#license)
 
@@ -14,13 +14,13 @@ Some of the examples are from the official examples given by Spark. But I will g
 
 As a fan of greedy algorithm, I would like to start with *random forest* algorithm.
 
-What is the idea of *Random Forest*? 
+What is the idea of **Random Forest**? 
 
 To put it simpel, averaging a set of observations reduces variance. Hence a natural way to reduce the variance and hence increase the prediction accuracy of a machine learning model is to take many training sets from the population, build a separate prediction model using each training set, and average the resulting predictions [1]. This is the idea of **bagging**, a special case of random forest. 
 
 Then we may need to subset the predictors. That is, in each training procedure, we don't use all the features we have. You may ask WHY since this seems like a 'waste' of resources we have. But let's suppose that there is a very strong predictor in the data, then in the models we produced, most of them will use that strong predictor in the top split and all of these decision trees will look similar, i.e., they're highly correlated. This may effect the reduction in variance and worsen the result. [1] This is why we only use randomly selected features in each tree model. 
 
-This is just the idea of random forest. Simple, straitforward, and elegant at the same time.
+This is just the idea of **random forest**. Simple, straitforward, and elegant at the same time.
 
 Now let's have a look at the example code given by Spark. I commented the points where we may need to note (and details will be given later)
 
@@ -28,14 +28,14 @@ Now let's have a look at the example code given by Spark. I commented the points
 from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.mllib.util import MLUtils
 
-# --- Point 1 ---
+# --- Point 1, 2 ---
 # Load and parse the data file into an RDD of LabeledPoint.
 data = MLUtils.loadLibSVMFile(sc, 'data/mllib/sample_libsvm_data.txt')
 # Split the data into training and test sets (30% held out for testing)
 (trainingData, testData) = data.randomSplit([0.7, 0.3])
 
 
-# --- Point 2, 3, 4 ---
+# --- Point 3, 4, 5 ---
 # Train a RandomForest model.
 #  Empty categoricalFeaturesInfo indicates all features are continuous.
 model = RandomForest.trainClassifier(trainingData, numClasses=2, categoricalFeaturesInfo={},
@@ -61,7 +61,7 @@ LIBSVM data files look like below:
 -1 1:-726 2:131 3:0.129771 4:0.328244 5:0.229008 6:0.129771 7:0.328244 8:0.229008
 ......
 ```
-The first element of each row is the *label*, or we can say it's the *response value*. The labels can be either discrete or continuous. Normally, the labels will be discrete if we're working on classification, and continuous if we're trying to do regression. Following the labels are the *feature indices* and the *feature values* in format `index:value` (Please note that the index starts from `1` instead of `0` in LIBSVM data files).
+The first element of each row is the *label*, or we can say it's the *response value*. The labels can be either discrete or continuous. Normally, the labels will be discrete if we're working on classification, and continuous if we're trying to do regression. Following the labels are the *feature indices* and the *feature values* in format `index:value` (Please note that the index starts from `1` instead of `0` in LIBSVM data files, i.e., the indices are one-based and in ascending order. After loading, the feature indices are converted to zero-based [4]).
 
 Sometimes we may find 'weird' LIBSVM data like below
 ```
@@ -72,14 +72,20 @@ Sometimes we may find 'weird' LIBSVM data like below
 The indices in it are not continuous. What's wrong? Actually the missing features are all 0. For example, in the first row, feature 1, 2, 4-10, 12-13, ... are all zero-values. This design is partially for the sake of memory usage. It would help improve the efficiency of the our programs if the data are sparse (containing quite many zero-values).
 
 
-##### Point 2: How many trees we should have (`numTrees`)
+##### Point 2: Data Type "Labeled Point"
+
+The data loaded by method `loadLibSVMFile` will be saved as `Labeled Points`. What is it?
+
+MLlib supports local vectors and matrices stored on a single machine, as well as distributed matrices backed by one or more RDDs. Local vectors and local matrices are simple data models that serve as public interfaces. A training example used in supervised learning is called a “labeled point” in MLlib [4].
+
+##### Point 3: How many trees we should have (`numTrees`)
 
 This argument determines how many trees we build in a random forest. Increasing the number of trees will decrease the variance in predictions, and improve the model’s test accuracy. At the same time, training time will increaseroughly linearly in the number of trees.
 
 Personally, I would recommend 400-500 as a 'safe' choice.
 
 
-##### Point 3: How many features to use (`featureSubsetStrategy`)
+##### Point 4: How many features to use (`featureSubsetStrategy`)
 
 As we mentioned above, the very unique charactristic of *random forest* is that in each tree we use a subset of features (predictors) instead of using all of them. Then, how many features should we use in each tree model? we can set `featureSubsetStrategy="auto"` of course so that the function we called will help us configure automatically, but we may want to tune it in some situations. Decreasing this number will speed up training, but can sometimes impact performance if too low [2].
 
@@ -89,7 +95,7 @@ Usually, given the number of features is `p`, we use `p/3` features in each mode
 
 
 
-##### Point 4: What is 'gini' --- the measures used to grow the trees (`impurity`)
+##### Point 5: What is 'gini' --- the measures used to grow the trees (`impurity`)
 
 `impurity` argument helps determine the criterion used for information gain calculation, and in PySpark the supported values are “gini” (recommended) or “entropy” [3]. Since random forest is some kind of *greedy algorithm*, we can say that `impurity` helps determine what is the objective function when the algorithm makes each decisions.
 
@@ -99,7 +105,42 @@ The most commonly used measures for this are just **Gini Index** and *Cross-entr
 
 
 ## Regression
-To-DO
+
+From my own understanding, regression is to build a model which can fit the training data most closely. We normally use *mean squared error* (MSE) as the measure of the fit quality and the objective function when we estimate the parameters.
+
+The methods we usually use to do regression in Spark MLlib is `linearRegressionWithSGD.train` and we use `predict` to do the prediction with the regression model we obtain. Note that the 'SGD' here refers to Stochastic Gradient Descent.
+
+```python
+
+# the two lines below are added so that this code can be run as a self-containd application.
+from pyspark import SparkContext
+sc = SparkContext("local", "Simple App")
+
+# load the necessary modules
+from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD
+
+# Load and parse the data
+def parsePoint(line):
+    values = [float(x) for x in line.replace(',', ' ').split(' ')]
+    return LabeledPoint(values[0], values[1:])
+
+data = sc.textFile("data/mllib/ridge-data/lpsa.data")
+parsedData = data.map(parsePoint)
+
+
+# split the data into two sets for training and testing
+(trainingData, testData) = parsedData.randomSplit([0.7, 0.3])
+
+
+# Build the model
+model = LinearRegressionWithSGD.train(trainingData)
+
+
+# Evaluate the model on training data
+Preds = testData.map(lambda p: (p.label, model.predict(p.features)))
+MSE = Preds.map(lambda (v, p): (v - p)**2).reduce(lambda x, y: x + y) / Preds.count()
+print("Mean Squared Error = " + str(MSE))
+```
 
 
 
@@ -111,6 +152,7 @@ To-DO
 
 [3] pyspark.mllib package, http://spark.apache.org/docs/latest/api/python/pyspark.mllib.html
 
+[4] MLlib - Data Types, http://spark.apache.org/docs/latest/mllib-data-types.html
 
 ## License
 Please note this repostory is under the Creative Commons Attribution-ShareAlike License[https://creativecommons.org/licenses/by-sa/3.0/].
