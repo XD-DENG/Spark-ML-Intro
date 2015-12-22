@@ -4,6 +4,12 @@ In this repo, I try to introduce some basic machine learning usages of *PySpark*
 
 Some of the examples are from the official examples given by Spark. But I will give more details.
 
+- [Random Forest](#random-forest)
+- [Regression](#2-sample-data)
+- [References](#references)
+- [License](#license)
+
+
 ## Random Forest
 
 As a fan of greedy algorithm, I would like to start with *random forest* algorithm.
@@ -91,9 +97,20 @@ The most commonly used measures for this are just **Gini Index** and *Cross-entr
 
 
 
+
+## Regression
+To-DO
+
+
+
+
 ## References
 [1] An Introduction to Statistical Learning with Applications in R
 
 [2] MLlib - Ensembles, http://spark.apache.org/docs/latest/mllib-ensembles.html
 
 [3] pyspark.mllib package, http://spark.apache.org/docs/latest/api/python/pyspark.mllib.html
+
+
+## License
+Please note this repostory is under the Creative Commons Attribution-ShareAlike License[https://creativecommons.org/licenses/by-sa/3.0/].
