@@ -193,9 +193,26 @@ And you'll also need to include `p.label` if you want to do regression analysis 
 
 The next machine learning method I'd like to introduce is about clustering, K-means. It is an unsupervised learning method where we would like to group the observations into *K* groups (or subsets). We call it "unsupervised" since we don't have a "golden standard" (like the **test set** we prepared when we apply regression or random forest) to help check and evaluate the model we built (of course we can use other measures to evaluate the clustering models).
 
-To-Do:
-1. the idea of K-means (attache the GIF I made)
-2. PySpark code (modify the code from spark official document since they didn't split training and test sets)
+K-means may be the simplest approach for clustering while it’s also an elegant and efficient method. To produce the clusters, K-means method only requires the number of clusters *K* as its input.
+
+The idea of K-means clustering is that a good clustering is with the smallest within-cluster variation (a measurement of how di↵erent the observations within a cluster are from each other) in a possible range. To achieve this purpose, K-means algorithm is designed in a "greedy" algorith fashion
+
+**K-means Algorithm**
+
+**1.** For each observation, assign a random number which is generated from 1 to *K* to it.
+
+**2.** For each of the *K* clusters, compute the cluster center. The *k*th cluster’s center is the vector of the means of the vectors of all the observations belonging to the kth cluster.
+
+**3.** Re-assign each observation to the cluster whose cluster center is closest to this observation.
+
+**4.** Check if the new assignments are the same as the last iteration. If not, go to step 2; if yes, end.
+
+An example of iteration with K-means algorithm is presented below
+
+![alt text](figures/k-means.gif)
+
+
+**To-Do:** PySpark code (modify the code from spark official document since they didn't split training and test sets)
 
 
 
