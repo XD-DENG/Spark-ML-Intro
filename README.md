@@ -6,6 +6,7 @@ Some of the examples are from the official examples given by Spark. But I will g
 
 - [Random Forest](#random-forest)
 - [Regression](#regression)
+- [K-means](#k-means)
 - [References](#references)
 - [License](#license)
 
@@ -186,6 +187,15 @@ And you'll also need to include `p.label` if you want to do regression analysis 
 ##### Point 2: Regression Analysis
 `MLlib` provided the most commonly used metrics for regressiona analysis. You may refer to https://en.wikipedia.org/wiki/Regression_analysis for the relevant information.
 
+
+
+## K-means
+
+The next machine learning method I'd like to introduce is about clustering, K-means. It is an unsupervised learning method where we would like to group the observations into *K* groups (or subsets). We call it "unsupervised" since we don't have a "golden standard" (like the **test set** we prepared when we apply regression or random forest) to help check and evaluate the model we built (of course we can use other measures to evaluate the clustering models).
+
+To-Do:
+1. the idea of K-means (attache the GIF I made)
+2. PySpark code (modify the code from spark official document since they didn't split training and test sets)
 
 
 
