@@ -199,13 +199,13 @@ The idea of K-means clustering is that a good clustering is with the smallest wi
 
 **K-means Algorithm**
 
-	**1.** For each observation, assign a random number which is generated from 1 to *K* to it.
+	1. For each observation, assign a random number which is generated from 1 to *K* to it.
 
-	**2.** For each of the *K* clusters, compute the cluster center. The *k*th cluster’s center is the vector of the means of the vectors of all the observations belonging to the kth cluster.
+	2. For each of the *K* clusters, compute the cluster center. The *k*th cluster’s center is the vector of the means of the vectors of all the observations belonging to the kth cluster.
 
-	**3.** Re-assign each observation to the cluster whose cluster center is closest to this observation.
+	3. Re-assign each observation to the cluster whose cluster center is closest to this observation.
 
-	**4.** Check if the new assignments are the same as the last iteration. If not, go to step 2; if yes, END.
+	4. Check if the new assignments are the same as the last iteration. If not, go to step 2; if yes, END.
 
 
 An example of iteration with K-means algorithm is presented below
