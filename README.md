@@ -88,7 +88,7 @@ Personally, I would recommend 400-500 as a 'safe' choice.
 
 ##### Point 4: How many features to use (`featureSubsetStrategy`)
 
-As we mentioned above, the very unique charactristic of *random forest* is that in each tree we use a subset of features (predictors) instead of using all of them. Then, how many features should we use in each tree model? we can set `featureSubsetStrategy="auto"` of course so that the function we called will help us configure automatically, but we may want to tune it in some situations. Decreasing this number will speed up training, but can sometimes impact performance if too low [2].
+As we mentioned above, the very unique charactristic of *random forest* is that in each split of the tree model we use a subset of features (predictors) instead of using all of them. Then, how many features should we use in each split? we can set `featureSubsetStrategy="auto"` of course so that the function we called will help us configure automatically, but we may want to tune it in some situations. Decreasing this number will speed up training, but can sometimes impact performance if too low [2].
 
 For the function `RandomForest.trainClassifier` in PySaprk , argument `featureSubsetStrategy` supports“auto” (default), “all”, “sqrt”, “log2”, “onethird”. If “auto” is set, this parameter is set based on numTrees: if numTrees == 1, set to “all”; if numTrees > 1 (forest) set to “sqrt” [3].
 
