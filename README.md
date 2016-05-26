@@ -195,7 +195,7 @@ The next machine learning method I'd like to introduce is about clustering, K-me
 
 K-means may be the simplest approach for clustering while it’s also an elegant and efficient method. To produce the clusters, K-means method only requires the number of clusters *K* as its input.
 
-The idea of K-means clustering is that a good clustering is with the smallest within-cluster variation (a measurement of how diffrerent the observations within a cluster are from each other) in a possible range. To achieve this purpose, K-means algorithm is designed in a "greedy" algorith fashion
+The idea of K-means clustering is that a good clustering is with the smallest within-cluster variation (a measurement of how different the observations within a cluster are from each other) in a possible range. To achieve this purpose, K-means algorithm is designed in a "greedy" algorithm fashion
 
 **K-means Algorithm**
 
