@@ -19,7 +19,7 @@ The idea of K-means clustering is that a good clustering is with the smallest wi
 
 An example of iteration with K-means algorithm is presented below
 
-![alt text](./figures/k-means.gif)
+![alt text](../figures/k-means.gif)
 
 
 Now it's time to implement K-means with PySpak. I generate a dateset myself, it contains 30 observations, and I purposedly "made" them group 3 sets.
