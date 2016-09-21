@@ -8,8 +8,6 @@ Some of the examples are from the official examples given by Spark. But I will g
 - [Regression](https://github.com/XD-DENG/Spark-ML-Intro/tree/dev/chapters/regression.md)
 - [K-means](https://github.com/XD-DENG/Spark-ML-Intro/tree/dev/chapters/k_means.md)
 - [References](https://github.com/XD-DENG/Spark-ML-Intro/tree/dev/chapters/references.md)
-- [License](#license)
-
 
 ## License
 Please note this repostory is under the Creative Commons Attribution-ShareAlike License[https://creativecommons.org/licenses/by-sa/3.0/].
