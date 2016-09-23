@@ -4,7 +4,7 @@ As a fan of greedy algorithm, I would like to start with *random forest* algorit
 
 What is the idea of **Random Forest**? 
 
-To put it simple, averaging a set of observations reduces variance. Hence a natural way to reduce the variance and hence increase the prediction accuracy of a decision tree model is to take training sets repeatedly from the population, build a separate tree model using each training set, and average the resulting predictions [1]. This is the idea of **bagging**, a "special case" of random forest. 
+To put it simple, averaging a set of observations reduces variance. Hence a natural way to reduce the variance and hence increase the prediction accuracy of a decision tree model is to take training sets repeatedly from the population, build a separate tree model using each training set, and average the resulting predictions [1]. This is the idea of **bagging** (**B**ootstrap **agg**regat**ing**). 
 
 Then we may need to subset the predictors. That is, in each split of one tree model, we don't use all the features we have. You may ask WHY since this seems like a 'waste' of resources we have. But let's suppose that there is a very strong predictor in the data, then in the models we produced, most of them will use that strong predictor in the top split and all of these decision trees will look similar, i.e., they're highly correlated. This may effect the reduction in variance and worsen the result. [1] This is why we only use randomly selected features in each split of the tree models. 
 
