@@ -58,7 +58,7 @@ data = sc.parallelize(data)
 
 
 # Build the K-Means model
-clusters = KMeans.train(data, 3, maxIterations=10, runs=10, initializationMode="random")  # the initializationMode can also be "k-means||" or set by users.
+clusters = KMeans.train(data, 3, maxIterations=10, initializationMode="random")  # the initializationMode can also be "k-means||" or set by users.
 
 # Collect the clustering result
 result=data.map(lambda point: clusters.predict(point)).collect()
