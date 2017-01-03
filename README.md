@@ -1,6 +1,8 @@
 # Spark Machine Learning Introduction
 
-In this repo, I try to introduce some basic machine learning usages of *PySpark*. The contents I'm going to cover would be quite simple. But I guess it would be helpful for some people since I would cover some questions I encountered myself from the perspective of a person who's used to more "normal" ML settings (like R language).
+In this repo, I try to introduce some basic machine learning usages of *PySpark*. The contents I'm going to cover would be quite simple. But I guess it would be helpful for some people since I would cover some questions I encountered myself from the perspective of a person who's used to more "normal" ML settings (like R language). 
+
+For the basic PySpark operations (Tranformations and Actions), you may refer to my another GitHub repo, [Spark Practice](https://github.com/XD-DENG/Spark-practice).
 
 Some of the examples are from the official examples given by Spark. But I will give more details.
 
