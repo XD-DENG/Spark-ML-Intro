@@ -10,14 +10,16 @@ Then we may need to subset the predictors. That is, in each split of one tree mo
 
 This is just the idea of **random forest**. Simple, straitforward, and elegant at the same time.
 
-Now let's have a look at the example code given by Spark. I commented the points where we may need to note (and details will be given later)
+Now let's have a look at the example code given by Spark. I commented the points where we may need to note (and details will be given later). You can also run this example by using `./bin/spark-submit <python file>`  in the top-level Spark directory.
 
 ```python
 from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.mllib.util import MLUtils
+from pyspark import SparkContext
 
 # --- Point 1, 2 ---
 # Load and parse the data file into an RDD of LabeledPoint.
+sc = SparkContext()
 data = MLUtils.loadLibSVMFile(sc, 'data/mllib/sample_libsvm_data.txt')
 # Split the data into training and test sets (30% held out for testing)
 (trainingData, testData) = data.randomSplit([0.7, 0.3])
