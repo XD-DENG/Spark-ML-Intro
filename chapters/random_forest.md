@@ -1,7 +1,5 @@
 ## Random Forest
 
-As a fan of greedy algorithm, I would like to start with *random forest* algorithm.
-
 What is the idea of **Random Forest**? 
 
 To put it simple, averaging a set of observations reduces variance. Hence a natural way to reduce the variance and hence increase the prediction accuracy of a decision tree model is to take training sets repeatedly from the population, build a separate tree model using each training set, and average the resulting predictions [1]. This is the idea of **bagging** (**B**ootstrap **agg**regat**ing**). 
